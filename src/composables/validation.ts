@@ -40,3 +40,38 @@ export const filterStringInput = (
     ElMessage.warning('Numbers have been removed from the input')
   }
 }
+
+export const validateAge = (rule: any, value: string, callback: any) => {
+  const age = parseInt(value)
+  if (age < 16) {
+    callback(new Error('Student must be at least 16 years old'))
+  } else if (age > 65) {
+    callback(new Error('Student age cannot exceed 65 years'))
+  } else {
+    callback()
+  }
+}
+
+export const validatePassword = (rule: any, value: string, callback: any) => {
+  if (value.length < 8) {
+    callback(new Error('Password must be at least 8 characters long'))
+  }
+
+  if (!/[A-Z]/.test(value)) {
+    callback(new Error('Password must contain at least one uppercase letter'))
+  }
+
+  if (!/[a-z]/.test(value)) {
+    callback(new Error('Password must contain at least one lowercase letter'))
+  }
+
+  if (!/[0-9]/.test(value)) {
+    callback(new Error('Password must contain at least one number'))
+  }
+
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+    callback(new Error('Password must contain at least one special character'))
+  }
+
+  callback()
+}

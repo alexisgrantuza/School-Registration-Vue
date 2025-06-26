@@ -1,6 +1,8 @@
 <template>
   <el-form
+    ref="formRef"
     :model="form"
+    :rules="rules"
     label-width="auto"
     style="
       max-width: 600px;
@@ -10,7 +12,7 @@
       transform: translate(-50%, -50%);
     "
   >
-    <el-form-item>
+    <el-form-item prop="password" :show-message="true">
       <el-input
         v-model="form.password"
         placeholder="NEW PASSWORD"
@@ -27,7 +29,7 @@
       </el-input>
     </el-form-item>
 
-    <el-form-item>
+    <el-form-item prop="confirmPassword" :show-message="true">
       <el-input
         v-model="form.confirmPassword"
         placeholder="CONFIRM PASSWORD"
@@ -89,9 +91,19 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import { validatePassword } from '@/composables/validation'
+import type { FormInstance, FormRules } from 'element-plus'
+import type { ChangePasswordResponse } from '@/types/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
+
+const form = ref<ChangePasswordResponse>({
+  password: '',
+  confirmPassword: '',
+})
+
+const formRef = ref<FormInstance | null>(null)
 
 onMounted(() => {
   const admin = localStorage.setItem(
@@ -106,29 +118,42 @@ onMounted(() => {
   return admin
 })
 
-const form = ref({
-  password: '',
-  confirmPassword: '',
+const rules = ref<FormRules>({
+  password: [
+    { required: true, message: 'Password is required', trigger: 'blur' },
+    { validator: validatePassword, trigger: 'blur' },
+  ],
+  confirmPassword: [
+    { required: true, message: 'Confirm password is required', trigger: 'blur' },
+    { validator: validatePassword, trigger: 'blur' },
+  ],
 })
 
 const onSubmit = async () => {
-  console.log(form.value)
+  try {
+    if (!formRef.value) return
 
-  const { password, confirmPassword } = form.value
+    const { password, confirmPassword } = form.value
 
-  if (password !== confirmPassword) {
-    ElMessage.error('Passwords do not match')
-    return
-  }
+    if (password !== confirmPassword) {
+      ElMessage.error('Passwords do not match')
+      return
+    }
 
-  const result = await authStore.changePassword(password)
+    await formRef.value.validate()
 
-  console.log(result)
-  if (result.success) {
-    router.push('/')
-    ElMessage.success('Password reset successful')
-  } else {
-    ElMessage.error(result.error || 'Password reset failed')
+    const result = await authStore.changePassword(confirmPassword)
+
+    console.log(result)
+    if (result.success) {
+      router.push('/')
+      ElMessage.success('Password reset successful')
+    } else {
+      ElMessage.error(result.error || 'Password reset failed')
+    }
+  } catch (error) {
+    ElMessage.error('Password reset failed. Please try again.')
+    console.error(error)
   }
 }
 </script>
