@@ -11,6 +11,14 @@
           <el-tag type="primary" size="large" round>
             {{ students.length }} Student{{ students.length !== 1 ? 's' : '' }}
           </el-tag>
+          <div class="view-buttons-segmented">
+            <el-button :class="{ active: viewMode === 'list' }" @click="toggleView('list')">
+              <el-icon><List /></el-icon>
+            </el-button>
+            <el-button :class="{ active: viewMode === 'grid' }" @click="toggleView('grid')">
+              <el-icon><Grid /></el-icon>
+            </el-button>
+          </div>
         </div>
       </div>
 
@@ -68,7 +76,13 @@
 
     <!-- Students Grid -->
     <div v-else class="students-grid">
-      <transition-group name="card" tag="div" class="grid-container" appear>
+      <transition-group
+        v-if="viewMode === 'grid'"
+        name="card"
+        tag="div"
+        class="grid-container"
+        appear
+      >
         <div
           v-for="student in paginatedStudents"
           :key="`${student._id}-${currentPage}`"
@@ -151,6 +165,29 @@
           </el-card>
         </div>
       </transition-group>
+      <transition-group v-else name="list" tag="div" class="list-container" appear>
+        <el-table :data="paginatedStudents">
+          <el-table-column prop="firstName" label="First Name" />
+          <el-table-column prop="lastName" label="Last Name" />
+          <el-table-column prop="course" label="Course" />
+          <el-table-column prop="address" label="Address" />
+          <el-table-column prop="birthDate" label="Birth Date" />
+          <el-table-column prop="age" label="Age" />
+          <el-table-column prop="actions" label="Actions" width="100">
+            <template #default="scope">
+              <el-button type="text" @click="viewStudent(scope.row)">
+                <el-icon><View /></el-icon>
+              </el-button>
+              <el-button type="text" @click="editStudent(scope.row)">
+                <el-icon><Edit /></el-icon>
+              </el-button>
+              <el-button type="text" @click="deleteStudent(scope.row)">
+                <el-icon><Delete /></el-icon>
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </transition-group>
     </div>
 
     <!-- Pagination -->
@@ -191,6 +228,8 @@ import {
   School,
   Location,
   Search,
+  List,
+  Grid,
 } from '@element-plus/icons-vue'
 import { useStudentStore } from '@/stores/student'
 import type { Student } from '@/types/student'
@@ -212,6 +251,7 @@ const searchQuery = ref('')
 const courseFilter = ref('')
 const currentPage = ref(1)
 const pageSize = ref(8)
+const viewMode = ref<'list' | 'grid'>('list')
 
 // Edit Modal state
 const showEditModal = ref(false)
@@ -269,6 +309,11 @@ const paginatedStudents = computed(() => {
   const endIndex = startIndex + pageSize.value
   return filteredStudentsAll.value.slice(startIndex, endIndex)
 })
+
+const toggleView = (mode: 'list' | 'grid') => {
+  viewMode.value = mode
+  console.log('View mode:', viewMode.value)
+}
 
 // Methods
 const getFullName = (student: Student): string => {
@@ -404,9 +449,123 @@ onMounted(async () => {
   color: #409eff;
 }
 
+/* Enhanced View Button Styles */
 .students-count {
   display: flex;
   align-items: center;
+  gap: 1rem;
+}
+
+/* View Toggle Buttons Container */
+.view-toggle-buttons {
+  display: flex;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e4e7ed;
+}
+
+/* Individual View Buttons */
+.view-toggle-buttons .el-button {
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: #606266 !important;
+  font-weight: 500;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  min-width: 44px;
+  height: 36px;
+}
+
+/* Active State */
+.view-toggle-buttons .el-button.active {
+  background: #409eff !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(64, 158, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Hover States */
+.view-toggle-buttons .el-button:not(.active):hover {
+  background: #f5f7fa !important;
+  color: #409eff !important;
+  transform: translateY(-1px);
+}
+
+.view-toggle-buttons .el-button.active:hover {
+  background: #337ecc !important;
+  box-shadow: 0 4px 8px rgba(64, 158, 255, 0.4);
+}
+
+/* Focus States */
+.view-toggle-buttons .el-button:focus {
+  outline: 2px solid #409eff;
+  outline-offset: 2px;
+}
+
+/* Icon Styling */
+.view-toggle-buttons .el-button .el-icon {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.view-toggle-buttons .el-button:hover .el-icon {
+  transform: scale(1.1);
+}
+
+/* Alternative: Segmented Control Style */
+.view-buttons-segmented {
+  display: inline-flex;
+  background: #f0f2f5;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 0;
+}
+
+.view-buttons-segmented .el-button {
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: #606266 !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  height: 32px;
+}
+
+.view-buttons-segmented .el-button.active {
+  background: #ffffff !important;
+  color: #409eff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.view-buttons-segmented .el-button:hover:not(.active) {
+  color: #409eff !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .view-toggle-buttons,
+  .view-buttons-segmented,
+  .view-buttons-pills,
+  .view-buttons-gradient,
+  .view-buttons-neuro {
+    gap: 4px;
+  }
+
+  .view-toggle-buttons .el-button,
+  .view-buttons-segmented .el-button,
+  .view-buttons-pills .el-button,
+  .view-buttons-gradient .el-button,
+  .view-buttons-neuro .el-button {
+    min-width: 36px !important;
+    padding: 6px 12px !important;
+  }
 }
 
 .filter-bar {
@@ -649,6 +808,17 @@ onMounted(async () => {
 
   .card-footer {
     flex-direction: column;
+  }
+
+  .view-toggle-buttons,
+  .view-buttons-pills {
+    gap: 4px;
+  }
+
+  .view-toggle-buttons .el-button,
+  .view-buttons-pills .el-button {
+    min-width: 36px !important;
+    padding: 6px 12px !important;
   }
 }
 
