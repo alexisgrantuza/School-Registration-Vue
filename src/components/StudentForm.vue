@@ -96,7 +96,7 @@ import {
   filterStringInput,
   preventNumbersInput,
   validateStringOnly,
-} from '@/composables/validation'
+} from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
 
@@ -209,9 +209,12 @@ const submitForm = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     ElMessage.success('Student registered successfully!')
+    console.log(fullName.value)
     emit('student-registered', { ...studentForm, fullName: fullName.value })
 
     await studentStore.createStudent(studentForm)
+
+    console.log(studentForm)
 
     resetForm()
   } catch (error) {
