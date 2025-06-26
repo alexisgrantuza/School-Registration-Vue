@@ -96,6 +96,7 @@ import {
   filterStringInput,
   preventNumbersInput,
   validateStringOnly,
+  validateAge,
 } from '@/composables/validation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
@@ -139,16 +140,7 @@ const formRules: FormRules<Student> = {
   age: [
     { required: true, message: 'Age is required', trigger: 'blur' },
     {
-      validator: (rule, value, callback) => {
-        const age = parseInt(value)
-        if (age < 16) {
-          callback(new Error('Student must be at least 16 years old'))
-        } else if (age > 65) {
-          callback(new Error('Student age cannot exceed 65 years'))
-        } else {
-          callback()
-        }
-      },
+      validator: validateAge,
       trigger: 'blur',
     },
   ],

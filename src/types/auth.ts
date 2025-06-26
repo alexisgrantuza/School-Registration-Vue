@@ -13,3 +13,10 @@ export interface LoginResponse {
   }
   error?: string
 }
+
+export interface ChangePasswordResponse {
+  success?: boolean
+  error?: string
+  password: string
+  confirmPassword: string
+}
