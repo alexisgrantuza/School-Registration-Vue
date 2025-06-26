@@ -105,7 +105,7 @@ import {
   filterStringInput,
   preventNumbersInput,
   validateStringOnly,
-} from '@/composables/validation'
+} from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
 
