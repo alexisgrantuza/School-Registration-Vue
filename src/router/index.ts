@@ -31,6 +31,12 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
+
+  // Initialize default credentials when visiting home page (login form)
+  if (to.path === '/') {
+    authStore.DefaultCredentials()
+  }
+
   console.log(authStore.isLoggedIn)
   if (to.path === '/' && authStore.isLoggedIn) {
     next('/dashboard')

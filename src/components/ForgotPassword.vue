@@ -12,7 +12,7 @@
       transform: translate(-50%, -50%);
     "
   >
-    <el-form-item prop="password" :show-message="true">
+    <el-form-item prop="password">
       <el-input
         v-model="form.password"
         placeholder="NEW PASSWORD"
@@ -21,6 +21,7 @@
         clearable
         class="transparent-input"
         @keyup.enter="onSubmit"
+        @input="updatePasswordChecks"
         autocomplete="off"
       >
         <template #prefix>
@@ -29,7 +30,44 @@
       </el-input>
     </el-form-item>
 
-    <el-form-item prop="confirmPassword" :show-message="true">
+    <!-- Password Requirements Display -->
+    <div v-if="form.password.length > 0" class="password-requirements">
+      <h4 style="color: #fff; font-size: 14px; margin-bottom: 10px">Password Requirements:</h4>
+      <div class="requirements-list">
+        <div
+          v-for="(check, index) in passwordChecks"
+          :key="index"
+          class="requirement-item"
+          :class="{ valid: check.isValid, invalid: !check.isValid }"
+        >
+          <el-icon v-if="check.isValid" class="check-icon valid">
+            <CircleCheck />
+          </el-icon>
+          <el-icon v-else class="check-icon invalid">
+            <CircleClose />
+          </el-icon>
+          <span class="requirement-text">{{ check.label }}</span>
+        </div>
+      </div>
+
+      <!-- Password Strength Bar -->
+      <div
+        class="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 15px; margin-bottom: 20px;"
+      >
+        <div class="strength-label">
+          <span>Password Strength</span>
+          <span>{{ validChecksCount }}/5</span>
+        </div>
+        <el-progress
+          :percentage="(validChecksCount / 5) * 100"
+          :color="getStrengthColor()"
+          :show-text="false"
+          :stroke-width="6"
+        />
+      </div>
+    </div>
+
+    <el-form-item prop="confirmPassword">
       <el-input
         v-model="form.confirmPassword"
         placeholder="CONFIRM PASSWORD"
@@ -46,10 +84,24 @@
       </el-input>
     </el-form-item>
 
+    <!-- Password Match Indicator -->
+    <div v-if="form.confirmPassword.length > 0">
+      <el-icon v-if="passwordsMatch" class="match-icon valid">
+        <CircleCheck />
+      </el-icon>
+      <el-icon v-else class="match-icon invalid">
+        <CircleClose />
+      </el-icon>
+      <span :class="{ valid: passwordsMatch, invalid: !passwordsMatch }">
+        {{ passwordsMatch ? 'Passwords match' : 'Passwords do not match' }}
+      </span>
+    </div>
+
     <el-form-item>
       <el-button
         type="primary"
         @click="onSubmit"
+        :disabled="!canSubmit"
         style="
           width: 100%;
           height: 45px;
@@ -87,11 +139,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { CircleCheck, CircleClose, Lock } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
-import { validatePassword } from '@/composables/validation'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { ChangePasswordResponse } from '@/types/auth'
 
@@ -105,6 +157,123 @@ const form = ref<ChangePasswordResponse>({
 
 const formRef = ref<FormInstance | null>(null)
 
+// Password validation checks
+const passwordChecks = ref([
+  {
+    label: 'At least 8 characters long',
+    isValid: false,
+    test: (pwd: string) => pwd.length >= 8,
+  },
+  {
+    label: 'Contains uppercase letter (A-Z)',
+    isValid: false,
+    test: (pwd: string) => /[A-Z]/.test(pwd),
+  },
+  {
+    label: 'Contains lowercase letter (a-z)',
+    isValid: false,
+    test: (pwd: string) => /[a-z]/.test(pwd),
+  },
+  {
+    label: 'Contains at least one number (0-9)',
+    isValid: false,
+    test: (pwd: string) => /[0-9]/.test(pwd),
+  },
+  {
+    label: 'Contains special character (!@#$%^&*)',
+    isValid: false,
+    test: (pwd: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd),
+  },
+])
+
+const validChecksCount = computed(() => {
+  const validChecks = passwordChecks.value.filter((check) => check.isValid).length
+  console.log(validChecks)
+  return validChecks
+})
+
+const passwordsMatch = computed(() => {
+  const passwordsMatch = form.value.password === form.value.confirmPassword
+  console.log(passwordsMatch)
+  return passwordsMatch
+})
+
+const canSubmit = computed(() => validChecksCount.value === 5 && passwordsMatch.value)
+
+// Methods
+const updatePasswordChecks = () => {
+  const checks = passwordChecks.value.forEach((check) => {
+    check.isValid = check.test(form.value.password)
+  })
+  console.log(checks)
+}
+
+const getStrengthColor = () => {
+  if (validChecksCount.value <= 2) return '#f56565' // red
+  if (validChecksCount.value <= 4) return '#ed8936' // orange
+  return '#48bb78' // green
+}
+
+// Custom validator that shows all failing requirements
+const validatePassword = (rule: any, value: string, callback: any) => {
+  if (!value) {
+    callback(new Error('Password is required'))
+    return
+  }
+
+  const failedChecks = passwordChecks.value
+    .filter((check) => !check.isValid)
+    .map((check) => check.label)
+
+  if (failedChecks.length > 0) {
+    callback(new Error(`Missing requirements:\n• ${failedChecks.join('\n• ')}`))
+  } else {
+    callback()
+  }
+}
+
+const validateConfirmPassword = (rule: any, value: string, callback: any) => {
+  if (!value) {
+    console.log('Confirm password is required')
+  }
+
+  if (value !== form.value.password) {
+    console.log('Passwords do not match')
+  }
+
+  callback()
+}
+
+const rules = ref<FormRules>({
+  password: [{ validator: validatePassword, trigger: 'blur' }],
+  confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
+})
+
+const onSubmit = async () => {
+  try {
+    if (!formRef.value) return
+
+    if (!canSubmit.value) {
+      ElMessage.error('Please fix all password requirements before submitting')
+      return
+    }
+
+    await formRef.value.validate()
+
+    const result = await authStore.changePassword(form.value.confirmPassword)
+
+    if (result.success) {
+      router.push('/')
+      ElMessage.success('Password reset successful')
+    } else {
+      ElMessage.error(result.error || 'Password reset failed')
+    }
+  } catch (error) {
+    ElMessage.error('Password reset failed. Please try again.')
+    console.error(error)
+  }
+}
+
 onMounted(() => {
   const admin = localStorage.setItem(
     'user',
@@ -117,45 +286,6 @@ onMounted(() => {
   )
   return admin
 })
-
-const rules = ref<FormRules>({
-  password: [
-    { required: true, message: 'Password is required', trigger: 'blur' },
-    { validator: validatePassword, trigger: 'blur' },
-  ],
-  confirmPassword: [
-    { required: true, message: 'Confirm password is required', trigger: 'blur' },
-    { validator: validatePassword, trigger: 'blur' },
-  ],
-})
-
-const onSubmit = async () => {
-  try {
-    if (!formRef.value) return
-
-    const { password, confirmPassword } = form.value
-
-    if (password !== confirmPassword) {
-      ElMessage.error('Passwords do not match')
-      return
-    }
-
-    await formRef.value.validate()
-
-    const result = await authStore.changePassword(confirmPassword)
-
-    console.log(result)
-    if (result.success) {
-      router.push('/')
-      ElMessage.success('Password reset successful')
-    } else {
-      ElMessage.error(result.error || 'Password reset failed')
-    }
-  } catch (error) {
-    ElMessage.error('Password reset failed. Please try again.')
-    console.error(error)
-  }
-}
 </script>
 
 <style scoped>
@@ -202,5 +332,84 @@ const onSubmit = async () => {
 
 .transparent-input :deep(.el-input__wrapper:hover) {
   border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Password Requirements Styles */
+.password-requirements {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.requirements-list {
+  margin-bottom: 15px;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.check-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.check-icon.valid {
+  color: #67c23a;
+}
+
+.check-icon.invalid {
+  color: #f56c6c;
+}
+
+.requirement-text {
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.requirement-item.valid .requirement-text {
+  color: #67c23a;
+}
+
+.requirement-item.invalid .requirement-text {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.password-strength {
+  margin-top: 10px;
+}
+
+.strength-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 5px;
+}
+
+.password-match {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.match-icon {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.match-icon.valid,
+.password-match .valid {
+  color: #67c23a;
+}
+
+.match-icon.invalid,
+.password-match .invalid {
+  color: #f56c6c;
 }
 </style>

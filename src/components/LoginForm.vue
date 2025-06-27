@@ -139,7 +139,9 @@ const onSubmit = async () => {
 }
 
 onMounted(() => {
-  authStore.initializeAuth()
+  // Initialize default credentials when login form shows
+  authStore.DefaultCredentials()
+  authStore.getAuth()
 
   if (authStore.isLoggedIn) {
     router.push('/dashboard')

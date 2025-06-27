@@ -22,6 +22,19 @@ export const useAuthStore = defineStore('auth', {
     setUser(user: User) {
       this.user = user
     },
+    DefaultCredentials() {
+      const existingUser = localStorage.getItem('user')
+      if (!existingUser) {
+        const defaultUser = {
+          id: 1,
+          username: 'admin',
+          password: 'admin123',
+          email: 'admin@example.com',
+        }
+        localStorage.setItem('user', JSON.stringify(defaultUser))
+        console.log('Default admin credentials initialized')
+      }
+    },
     /* login(token: string, user: User) {
       this.setToken(token)
       this.setUser(user)
@@ -103,7 +116,9 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('user')
       localStorage.removeItem('admin')
     },
-    initializeAuth() {
+    async getAuth() {
+      this.DefaultCredentials()
+
       const token = localStorage.getItem('token')
       const user = localStorage.getItem('user')
 

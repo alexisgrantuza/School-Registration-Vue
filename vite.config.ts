@@ -7,6 +7,10 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue(), vueDevTools()],
+  server: {
+    host: true,
+    port: 3000,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

@@ -112,6 +112,7 @@ const submitting = ref(false)
 
 const studentForm = reactive<Student>({
   _id: 0,
+  avatar: '',
   firstName: '',
   middleInitial: '',
   lastName: '',

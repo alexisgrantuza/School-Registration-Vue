@@ -10,9 +10,7 @@
         <template #header>
           <div class="card-header">
             <div class="student-avatar">
-              <el-avatar :size="50" class="avatar">
-                {{ getInitials(student.firstName, student.lastName) }}
-              </el-avatar>
+              <el-avatar :size="50" class="avatar" :src="getAvatar(student)" />
             </div>
             <div class="student-basic-info">
               <h3 class="student-name">
@@ -104,7 +102,7 @@ const {
   selectedStudent,
   handleStudentUpdated,
 } = useActions()
-const { getFullName, getInitials, formatDate, truncateText } = studentUtils()
+const { getFullName, formatDate, truncateText, getAvatar } = studentUtils()
 
 const props = defineProps<{
   paginatedStudents: Student[]
@@ -119,8 +117,12 @@ const props = defineProps<{
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
+}
+
+.student-card {
+  width: 100%;
 }
 
 .card-content {
@@ -128,13 +130,21 @@ const props = defineProps<{
   border-radius: 12px;
   border: 1px solid #e4e7ed;
   overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card-content:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0;
+  padding: 1rem;
 }
 
 .student-avatar {
@@ -149,6 +159,7 @@ const props = defineProps<{
 
 .student-basic-info {
   flex: 1;
+  min-width: 0;
 }
 
 .student-name {
@@ -156,6 +167,9 @@ const props = defineProps<{
   font-size: 1.1rem;
   font-weight: 600;
   color: #2c3e50;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .student-id {
@@ -169,12 +183,12 @@ const props = defineProps<{
 }
 
 .card-body {
-  padding: 0;
+  padding: 0 1rem 1rem 1rem;
 }
 
 .info-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
@@ -185,6 +199,7 @@ const props = defineProps<{
   padding: 0.75rem;
   background: #f8f9fa;
   border-radius: 8px;
+  min-width: 0;
 }
 
 .info-icon {
@@ -197,6 +212,7 @@ const props = defineProps<{
 .info-content {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .info-label {
@@ -215,16 +231,11 @@ const props = defineProps<{
   color: #2c3e50;
   font-weight: 500;
   word-break: break-word;
-}
-
-.card-footer {
-  display: flex;
-  gap: 0.75rem;
-  padding: 0;
-}
-
-.card-footer .el-button {
-  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 /* Enhanced Animations */
@@ -288,18 +299,73 @@ const props = defineProps<{
   transition-delay: 550ms;
 }
 
-@media (max-width: 480px) {
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
   .card-header {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 0.75rem;
+  }
+
+  .card-body {
+    padding: 0 0.75rem 0.75rem 0.75rem;
+  }
+
+  .info-grid {
     gap: 0.75rem;
   }
 
-  .card-actions {
-    align-self: flex-end;
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
+  .info-item {
+    padding: 0.5rem;
+  }
+
+  .student-name {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  .card-header {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.75rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .avatar {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 1rem !important;
+  }
+
+  .student-name {
+    font-size: 0.95rem;
+  }
+
+  .info-item {
+    padding: 0.5rem;
+  }
+
+  .info-icon {
+    font-size: 1.1rem;
+  }
+
+  .info-label {
+    font-size: 0.7rem;
+  }
+
+  .info-value {
+    font-size: 0.8rem;
   }
 }
 </style>

@@ -37,7 +37,7 @@
               <el-dropdown-item command="settings">
                 <el-icon><Setting /></el-icon> Settings
               </el-dropdown-item>
-              <el-dropdown-item divided command="logout">
+              <el-dropdown-item divided command="logout" @click="handleLogout">
                 <el-icon><SwitchButton /></el-icon> Logout
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -67,7 +67,7 @@
               <el-dropdown-item command="settings">
                 <el-icon><Setting /></el-icon> Settings
               </el-dropdown-item>
-              <el-dropdown-item divided command="logout">
+              <el-dropdown-item divided command="logout" @click="handleLogout">
                 <el-icon><SwitchButton /></el-icon> Logout
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -122,7 +122,9 @@ const handleCommand = (command: string) => {
       router.push('/settings')
       break
     case 'logout':
-      handleLogout()
+      // Handle logout
+      ElMessage.success('Logged out successfully')
+      router.push('/')
       break
   }
 }
@@ -215,6 +217,8 @@ const handleLogout = () => {
   gap: 12px;
   padding: 6px 16px;
   border-radius: 20px;
+  border: none;
+  outline: none;
   cursor: pointer;
   transition: background 0.2s;
   white-space: nowrap;

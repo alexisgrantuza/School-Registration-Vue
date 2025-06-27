@@ -22,12 +22,14 @@ function getRandomBirthDateAndAge() {
 
 export function generateFakeStudents(count: number, saveToLocalStorage: boolean = true): Student[] {
   const students = Array.from({ length: count }).map((_, i) => {
+    const avatar = faker.image.avatar()
     const firstName = faker.person.firstName()
     const lastName = faker.person.lastName()
     const middleInitial = faker.string.alpha({ length: 1 }).toUpperCase()
     const { birthDate, age } = getRandomBirthDateAndAge()
     return {
       _id: i + 1,
+      avatar,
       firstName,
       middleInitial,
       lastName,

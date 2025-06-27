@@ -25,6 +25,10 @@ export const studentUtils = () => {
     return text.substring(0, maxLength) + '...'
   }
 
+  const getAvatar = (student: Student): string => {
+    return student.avatar || ''
+  }
+
   /* // Separate computed for all filtered students (without pagination)
   const filteredStudentsAll = (students: Student[], searchQuery: string, courseFilter: string) => {
     console.log('Filtered students:', students)
@@ -55,6 +59,7 @@ export const studentUtils = () => {
     getInitials,
     formatDate,
     truncateText,
+    getAvatar,
     //filteredStudentsAll,
   }
 }
