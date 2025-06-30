@@ -29,8 +29,7 @@
       <el-form-item label="Middle Name" prop="middleName">
         <el-input
           v-model="studentForm.middleName"
-          placeholder="M.I."
-          maxlength="3"
+          placeholder="Enter middle name"
           @input="filterStringInput('middleName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
