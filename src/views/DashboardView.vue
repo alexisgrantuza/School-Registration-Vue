@@ -1,5 +1,5 @@
 <template>
-  <NavHeader2 :searchQuery="searchQuery" @searchQuery="handleSearchQuery" />
+  <NavHeader :searchQuery="searchQuery" @searchQuery="handleSearchQuery" />
   <div class="dashboard">
     <div class="dashboard-content">
       <h1>Student Management Dashboard</h1>
@@ -37,12 +37,12 @@
 </template>
 
 <script lang="ts" setup>
-import NavHeader2 from '@/components/NavHeader2.vue'
-import StudentForm from '@/components/StudentForm.vue'
+import NavHeader from '@/components/layout/NavHeader.vue'
+import StudentForm from '@/components/forms/StudentForm.vue'
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import StudentListCard from '@/components/StudentListCard.vue'
+import StudentListCard from '@/components/layout/StudentListCard.vue'
 import { generateFakeStudents } from '@/lib/seeder'
 import type { Student } from '@/types/student'
 

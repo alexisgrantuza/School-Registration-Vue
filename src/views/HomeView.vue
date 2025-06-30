@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import LoginForm from '../components/LoginForm.vue'
+import LoginForm from '@/components/forms/LoginForm.vue'
 </script>
 
 <template>
   <main>
-    <img src="../assets/BG.png" alt="logo" />
+    <img src="@/assets/BG.png" alt="logo" />
     <LoginForm />
   </main>
 </template>

@@ -92,7 +92,7 @@ import { useActions } from '@/composables/actions'
 import { studentUtils } from '@/composables/studentUtils'
 import { MoreFilled, View, Edit, Delete, Calendar, School, Location } from '@element-plus/icons-vue'
 import type { Student } from '@/types/student'
-import EditDrawer from './EditDrawer.vue'
+import EditDrawer from '@/components/dialogs/EditDrawer.vue'
 
 const {
   viewStudent,
@@ -117,7 +117,7 @@ const props = defineProps<{
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 1.5rem;
 }
 

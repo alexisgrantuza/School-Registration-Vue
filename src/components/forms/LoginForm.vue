@@ -87,8 +87,8 @@
 import { reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElLoading } from 'element-plus'
-import { useAuthStore } from '../stores/auth'
-import type { User } from '../types/auth'
+import { useAuthStore } from '@/stores/auth'
+import type { User } from '@/types/auth'
 
 const authStore = useAuthStore()
 
