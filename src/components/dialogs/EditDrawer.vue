@@ -20,7 +20,7 @@
         <el-input
           v-model="studentForm.firstName"
           placeholder="Enter first name"
-          @input="filterStringInput('firstName', $event, studentForm)"
+          @input="filterInput('firstName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
       </el-form-item>
@@ -30,7 +30,7 @@
         <el-input
           v-model="studentForm.middleName"
           placeholder="Enter middle name"
-          @input="filterStringInput('middleName', $event, studentForm)"
+          @input="filterInput('middleName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
       </el-form-item>
@@ -40,7 +40,7 @@
         <el-input
           v-model="studentForm.lastName"
           placeholder="Enter last name"
-          @input="filterStringInput('lastName', $event, studentForm)"
+          @input="filterInput('lastName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
       </el-form-item>
@@ -101,9 +101,10 @@ import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { Student } from '@/types/student'
 import {
-  filterStringInput,
+  filterInput,
   preventNumbersInput,
   validateStringOnly,
+  validateAge,
 } from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
@@ -160,22 +161,18 @@ const formRules: FormRules<Student> = {
   ],
   middleName: [
     { validator: validateStringOnly, trigger: 'blur' },
-    { max: 1, message: 'Middle initial should be only 1 character', trigger: 'blur' },
+    {
+      min: 3,
+      max: 50,
+      message: 'Middle name must be between 3 and 50 characters',
+      trigger: 'blur',
+    },
   ],
   birthDate: [{ required: true, message: 'Birth date is required', trigger: 'change' }],
   age: [
     { required: true, message: 'Age is required', trigger: 'blur' },
     {
-      validator: (rule, value, callback) => {
-        const age = parseInt(value)
-        if (age < 16) {
-          callback(new Error('Student must be at least 16 years old'))
-        } else if (age > 65) {
-          callback(new Error('Student age cannot exceed 65 years'))
-        } else {
-          callback()
-        }
-      },
+      validator: validateAge,
       trigger: 'blur',
     },
   ],

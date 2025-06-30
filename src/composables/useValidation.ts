@@ -36,18 +36,14 @@ export const preventNumbersInput = (event: KeyboardEvent) => {
   }
 }
 
-export const filterStringInput = (
-  fieldName: keyof Student,
-  value: string,
-  studentForm: Student,
-) => {
+export const filterInput = (fieldName: keyof Student, value: string, studentForm: Student) => {
   // Allow letters and spaces, remove numbers
-  const filteredValue = value.replace(/[0-9]/g, '')
+  const filteredValue = value.replace(/[0-9\s]/g, '')
 
   studentForm[fieldName] = filteredValue as never
 
   if (value !== filteredValue) {
-    ElMessage.warning('Numbers have been removed from the input')
+    ElMessage.warning('Numbers/Spaces have been removed from the input')
   }
 }
 
