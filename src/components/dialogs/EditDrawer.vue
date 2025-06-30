@@ -30,7 +30,6 @@
         <el-input
           v-model="studentForm.middleName"
           placeholder="M.I."
-          maxlength="3"
           @input="filterStringInput('middleName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
@@ -105,9 +104,11 @@ import {
   filterStringInput,
   preventNumbersInput,
   validateStringOnly,
+  validateAge,
 } from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
+import { studentUtils } from '@/composables/useStudentUtils'
 
 // Props and Emits
 const props = defineProps<{
@@ -122,6 +123,7 @@ const emit = defineEmits<{
 
 // Store
 const studentStore = useStudentStore()
+const { getFullName } = studentUtils()
 
 // Reactive data
 const visible = computed({
@@ -161,24 +163,17 @@ const formRules: FormRules<Student> = {
   ],
   middleName: [
     { validator: validateStringOnly, trigger: 'blur' },
-    { max: 1, message: 'Middle initial should be only 1 character', trigger: 'blur' },
+    {
+      min: 3,
+      max: 50,
+      message: 'Middle name must be between 3 and 50 characters',
+      trigger: 'blur',
+    },
   ],
   birthDate: [{ required: true, message: 'Birth date is required', trigger: 'change' }],
   age: [
     { required: true, message: 'Age is required', trigger: 'blur' },
-    {
-      validator: (rule, value, callback) => {
-        const age = parseInt(value)
-        if (age < 16) {
-          callback(new Error('Student must be at least 16 years old'))
-        } else if (age > 65) {
-          callback(new Error('Student age cannot exceed 65 years'))
-        } else {
-          callback()
-        }
-      },
-      trigger: 'blur',
-    },
+    { validator: validateAge, trigger: 'blur' },
   ],
   address: [
     { required: true, message: 'Address is required', trigger: 'blur' },
@@ -190,12 +185,6 @@ const formRules: FormRules<Student> = {
     },
   ],
   course: [{ required: true, message: 'Course selection is required', trigger: 'change' }],
-}
-
-// Computed properties
-const getFullName = (student: Student): string => {
-  const middleName = student.middleName ? `${student.middleName}.` : ''
-  return `${student.firstName} ${middleName} ${student.lastName}`.trim()
 }
 
 // Auto-calculate age when birthDate changes
@@ -280,16 +269,7 @@ const handleClose = () => {
   }
 
   // Clear form data
-  Object.assign(studentForm, {
-    _id: 0,
-    firstName: '',
-    middleName: '',
-    lastName: '',
-    birthDate: '',
-    age: '',
-    address: '',
-    course: '',
-  })
+  Object.assign(studentForm, {})
 
   visible.value = false
 }

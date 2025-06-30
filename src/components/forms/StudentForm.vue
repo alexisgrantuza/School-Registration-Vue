@@ -164,7 +164,7 @@ const formRules: FormRules<Student> = {
 
 // Full Name
 const fullName = computed(() => {
-  return `${studentForm.firstName} ${studentForm.middleName ? studentForm.middleName + '. ' : ''}${studentForm.lastName}`
+  return `${studentForm.firstName} ${studentUtils().getMiddleName(studentForm)} ${studentForm.lastName}`
 })
 
 // Auto-calculate age when birthDate changes
