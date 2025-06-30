@@ -3,6 +3,7 @@ export interface Student {
   avatar?: string
   firstName: string
   middleInitial?: string
+  middleName?: string
   lastName: string
   birthDate: string
   age: string

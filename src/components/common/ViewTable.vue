@@ -22,14 +22,27 @@
       </el-table-column>
     </el-table>
   </transition-group>
+  <EditDrawer
+    v-model="showEditModal"
+    :student="selectedStudent"
+    @student-updated="handleStudentUpdated"
+  />
 </template>
 
 <script setup lang="ts">
-import { useActions } from '@/composables/actions'
+import { useActions } from '@/composables/useActions'
 import { View, Edit, Delete } from '@element-plus/icons-vue'
 import type { Student } from '@/types/student'
+import EditDrawer from '@/components/dialogs/EditDrawer.vue'
 
-const { viewStudent, editStudent, deleteStudent } = useActions()
+const {
+  viewStudent,
+  editStudent,
+  deleteStudent,
+  showEditModal,
+  selectedStudent,
+  handleStudentUpdated,
+} = useActions()
 
 const props = defineProps<{
   paginatedStudents: Student[]

@@ -1,6 +1,6 @@
 import { computed, ref, type Ref } from 'vue'
 import { useStudentStore } from '@/stores/student'
-import { studentUtils } from '@/composables/studentUtils'
+import { studentUtils } from '@/composables/useStudentUtils'
 
 export const usePagination = (searchQuery: Ref<string>, courseFilter: Ref<string>) => {
   const studentStore = useStudentStore()

@@ -17,6 +17,7 @@ export interface LoginResponse {
 export interface ChangePasswordResponse {
   success?: boolean
   error?: string
+  username: string
   password: string
   confirmPassword: string
 }

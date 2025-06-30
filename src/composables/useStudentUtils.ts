@@ -1,10 +1,27 @@
 import type { Student } from '@/types/student'
-import { computed } from 'vue'
 
 export const studentUtils = () => {
   const getFullName = (student: Student): string => {
-    const middleInitial = student.middleInitial ? `${student.middleInitial}.` : ''
-    return `${student.firstName} ${middleInitial} ${student.lastName}`.trim()
+    const middleName = student.middleName ? `${student.middleName}.` : ''
+    const middleNameFormatted = middleName
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase().slice(0, 1))
+      .join('')
+    const firstName = student.firstName
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+    const lastName = student.lastName
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+    if (middleName) {
+      return `${firstName} ${middleNameFormatted}. ${lastName}`.trim()
+    }
+    return `${firstName} ${lastName}`.trim()
   }
 
   const getInitials = (firstName: string, lastName: string): string => {
@@ -13,6 +30,7 @@ export const studentUtils = () => {
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString)
+
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',

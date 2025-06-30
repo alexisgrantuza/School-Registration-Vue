@@ -58,6 +58,7 @@
         <el-dropdown @command="handleCommand">
           <el-avatar :size="32" class="mobile-avatar">
             <el-icon><User /></el-icon>
+            <span class="username">{{ username }}</span>
           </el-avatar>
           <template #dropdown>
             <el-dropdown-menu>
@@ -90,7 +91,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
@@ -109,7 +110,9 @@ const isDark = ref(false)
 const showMobileSearch = ref(false)
 const searchQuery = ref('')
 const authStore = useAuthStore()
-const username = ref(authStore.getUser.username)
+
+// Make username reactive to auth store changes
+const username = computed(() => authStore.getUser.username || 'User')
 
 defineEmits(['searchQuery'])
 

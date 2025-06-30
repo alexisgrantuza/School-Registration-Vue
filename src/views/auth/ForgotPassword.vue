@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import ForgotPasswordForm from '@/components/ForgotPassword.vue'
+import ForgotPasswordForm from '@/components/forms/ForgotPassword.vue'
 </script>
 
 <style scoped>

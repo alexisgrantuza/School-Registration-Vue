@@ -13,9 +13,7 @@
               <el-avatar :size="50" class="avatar" :src="getAvatar(student)" />
             </div>
             <div class="student-basic-info">
-              <h3 class="student-name">
-                {{ getFullName(student) }}
-              </h3>
+              <h3 class="student-name">{{ getFullName(student) }}</h3>
             </div>
             <div class="card-actions">
               <el-dropdown trigger="click">
@@ -88,8 +86,8 @@
 </template>
 
 <script setup lang="ts">
-import { useActions } from '@/composables/actions'
-import { studentUtils } from '@/composables/studentUtils'
+import { useActions } from '@/composables/useActions'
+import { studentUtils } from '@/composables/useStudentUtils'
 import { MoreFilled, View, Edit, Delete, Calendar, School, Location } from '@element-plus/icons-vue'
 import type { Student } from '@/types/student'
 import EditDrawer from '@/components/dialogs/EditDrawer.vue'

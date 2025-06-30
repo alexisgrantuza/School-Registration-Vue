@@ -2,8 +2,8 @@ import type { Student } from '@/types/student'
 import { computed, ref } from 'vue'
 import { useStudentStore } from '@/stores/student'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { studentUtils } from './studentUtils'
-import { usePagination } from './pagination'
+import { studentUtils } from './useStudentUtils'
+import { usePagination } from './usePagination'
 
 export const useActions = () => {
   const studentStore = useStudentStore()

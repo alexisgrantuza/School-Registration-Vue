@@ -17,13 +17,12 @@
       />
     </el-form-item>
 
-    <!-- Middle Initial -->
-    <el-form-item label="Middle Initial" prop="middleInitial">
+    <!-- Middle Name -->
+    <el-form-item label="Middle Name" prop="middleName">
       <el-input
-        v-model="studentForm.middleInitial"
-        placeholder="M.I."
-        maxlength="3"
-        @input="filterStringInput('middleInitial', $event, studentForm)"
+        v-model="studentForm.middleName"
+        placeholder="Enter middle name (optional)"
+        @input="filterStringInput('middleName', $event, studentForm)"
         @keydown="preventNumbersInput"
       />
     </el-form-item>
@@ -97,9 +96,10 @@ import {
   preventNumbersInput,
   validateStringOnly,
   validateAge,
-} from '@/composables/validation'
+} from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
+import { studentUtils } from '@/composables/useStudentUtils'
 
 const studentStore = useStudentStore()
 
@@ -114,7 +114,7 @@ const studentForm = reactive<Student>({
   _id: 0,
   avatar: '',
   firstName: '',
-  middleInitial: '',
+  middleName: '',
   lastName: '',
   birthDate: '',
   age: '',
@@ -133,9 +133,14 @@ const formRules: FormRules<Student> = {
     { validator: validateStringOnly, trigger: 'blur' },
     { min: 2, max: 50, message: 'Last name must be between 2 and 50 characters', trigger: 'blur' },
   ],
-  middleInitial: [
+  middleName: [
     { validator: validateStringOnly, trigger: 'blur' },
-    { max: 3, message: 'Middle initial should be only 3 characters', trigger: 'blur' },
+    {
+      min: 1,
+      max: 50,
+      message: 'Middle name must be between 1 and 50 characters',
+      trigger: 'blur',
+    },
   ],
   birthDate: [{ required: true, message: 'Birth date is required', trigger: 'change' }],
   age: [
@@ -159,7 +164,7 @@ const formRules: FormRules<Student> = {
 
 // Full Name
 const fullName = computed(() => {
-  return `${studentForm.firstName} ${studentForm.middleInitial ? studentForm.middleInitial + '. ' : ''}${studentForm.lastName}`
+  return `${studentForm.firstName} ${studentForm.middleName ? studentForm.middleName + '. ' : ''}${studentForm.lastName}`
 })
 
 // Auto-calculate age when birthDate changes
@@ -178,6 +183,7 @@ watch(
       }
 
       studentForm.age = age.toString()
+      studentForm.birthDate = formatDate(newBirthDate)
     } else {
       studentForm.age = ''
     }
@@ -190,6 +196,10 @@ const disabledDate = (time: Date) => {
   hundredYearsAgo.setFullYear(now.getFullYear() - 100)
 
   return time.getTime() > now.getTime() || time.getTime() < hundredYearsAgo.getTime()
+}
+
+const formatDate = (dateInput: string | Date): string => {
+  return studentUtils().formatDate(dateInput)
 }
 
 const submitForm = async () => {

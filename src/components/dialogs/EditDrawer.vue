@@ -25,13 +25,13 @@
         />
       </el-form-item>
 
-      <!-- Middle Initial -->
-      <el-form-item label="Middle Initial" prop="middleInitial">
+      <!-- Middle Name -->
+      <el-form-item label="Middle Name" prop="middleName">
         <el-input
-          v-model="studentForm.middleInitial"
+          v-model="studentForm.middleName"
           placeholder="M.I."
           maxlength="3"
-          @input="filterStringInput('middleInitial', $event, studentForm)"
+          @input="filterStringInput('middleName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
       </el-form-item>
@@ -105,7 +105,7 @@ import {
   filterStringInput,
   preventNumbersInput,
   validateStringOnly,
-} from '@/composables/validation'
+} from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
 
@@ -139,7 +139,7 @@ const courses = Object.entries(COURSES).map(([value, label]) => ({ value, label 
 const studentForm = reactive<Student>({
   _id: 0,
   firstName: '',
-  middleInitial: '',
+  middleName: '',
   lastName: '',
   birthDate: '',
   age: '',
@@ -159,7 +159,7 @@ const formRules: FormRules<Student> = {
     { validator: validateStringOnly, trigger: 'blur' },
     { min: 2, max: 50, message: 'Last name must be between 2 and 50 characters', trigger: 'blur' },
   ],
-  middleInitial: [
+  middleName: [
     { validator: validateStringOnly, trigger: 'blur' },
     { max: 1, message: 'Middle initial should be only 1 character', trigger: 'blur' },
   ],
@@ -194,8 +194,8 @@ const formRules: FormRules<Student> = {
 
 // Computed properties
 const getFullName = (student: Student): string => {
-  const middleInitial = student.middleInitial ? `${student.middleInitial}.` : ''
-  return `${student.firstName} ${middleInitial} ${student.lastName}`.trim()
+  const middleName = student.middleName ? `${student.middleName}.` : ''
+  return `${student.firstName} ${middleName} ${student.lastName}`.trim()
 }
 
 // Auto-calculate age when birthDate changes
@@ -229,7 +229,16 @@ watch(
       Object.assign(studentForm, { ...newStudent })
     }
   },
-  { immediate: true },
+  { immediate: true, deep: true },
+)
+
+watch(
+  () => visible.value,
+  (isVisible) => {
+    if (isVisible && props.student) {
+      Object.assign(studentForm, { ...props.student })
+    }
+  },
 )
 
 // Methods
@@ -274,7 +283,7 @@ const handleClose = () => {
   Object.assign(studentForm, {
     _id: 0,
     firstName: '',
-    middleInitial: '',
+    middleName: '',
     lastName: '',
     birthDate: '',
     age: '',

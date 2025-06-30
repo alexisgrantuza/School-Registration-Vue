@@ -95,14 +95,26 @@ export const useAuthStore = defineStore('auth', {
         }, 1000)
       })
     },
-    async changePassword(newPassword: string) {
+    async changePassword(newPassword: string, username?: string) {
       const user = localStorage.getItem('user')
       console.log(user)
       if (user) {
         const userData = JSON.parse(user)
+
+        // If username is provided, validate it matches the stored user
+        if (username && userData.username !== username) {
+          return { success: false, error: 'Username not found or incorrect' }
+        }
+
         userData.password = newPassword
         console.log(userData.password)
         localStorage.setItem('user', JSON.stringify(userData))
+
+        // Update the current user in the store if they're logged in
+        if (this.user.username === userData.username) {
+          this.user.password = newPassword
+        }
+
         return { success: true }
       }
       return { success: false, error: 'User not Found!' }
@@ -125,6 +137,7 @@ export const useAuthStore = defineStore('auth', {
       if (token && user) {
         this.setToken(token)
         this.setUser(JSON.parse(user))
+        this.isAuthenticated = true
       }
     },
   },

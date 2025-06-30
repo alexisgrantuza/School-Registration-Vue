@@ -2,21 +2,30 @@ import { ElMessage } from 'element-plus'
 import type { Student } from '@/types/student'
 
 export const validateStringOnly = (rule: any, value: string, callback: any) => {
-  if (value.match(/^[a-zA-Z]+$/)) {
+  // Allow empty values for optional fields
+  if (!value || value.trim() === '') {
+    callback()
+    return
+  }
+
+  // Allow letters and spaces, but require at least one letter
+  if (value.match(/^[a-zA-Z\s]+$/) && value.match(/[a-zA-Z]/)) {
     callback()
   } else {
-    callback(new Error(`${rule.field} cannot contain numbers`))
-    return
-  }
+    if (/[0-9]/.test(value)) {
+      callback(new Error(`${rule.field} cannot contain numbers`))
+      return
+    }
 
-  if (/[0-9]/.test(value)) {
-    callback(new Error(`${rule.field} cannot contain numbers`))
-    return
-  }
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
+      callback(new Error(`${rule.field} cannot contain special characters`))
+      return
+    }
 
-  if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) {
-    callback(new Error(`${rule.field} cannot contain special characters`))
-    return
+    if (!value.match(/[a-zA-Z]/)) {
+      callback(new Error(`${rule.field} must contain at least one letter`))
+      return
+    }
   }
 }
 
@@ -32,6 +41,7 @@ export const filterStringInput = (
   value: string,
   studentForm: Student,
 ) => {
+  // Allow letters and spaces, remove numbers
   const filteredValue = value.replace(/[0-9]/g, '')
 
   studentForm[fieldName] = filteredValue as never

@@ -118,9 +118,9 @@ import EditDrawer from '@/components/dialogs/EditDrawer.vue'
 import ViewModal from '@/components/common/ViewModal.vue'
 import ViewCard from '@/components/common/ViewCard.vue'
 import ViewTable from '@/components/common/ViewTable.vue'
-import { useActions } from '@/composables/actions'
-import { useToggle } from '@/composables/toggle'
-import { usePagination } from '@/composables/pagination'
+import { useActions } from '@/composables/useActions'
+import { useToggle } from '@/composables/useToggle'
+import { usePagination } from '@/composables/usePagination'
 
 const props = defineProps<{
   searchQuery?: string

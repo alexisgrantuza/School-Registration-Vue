@@ -12,6 +12,23 @@
       transform: translate(-50%, -50%);
     "
   >
+    <el-form-item prop="username">
+      <el-input
+        v-model="form.username"
+        placeholder="USERNAME"
+        show-password
+        style="width: 300px; height: 45px; border-radius: 10px"
+        clearable
+        class="transparent-input"
+        @keyup.enter="onSubmit"
+        autocomplete="off"
+      >
+        <template #prefix>
+          <el-icon><User /></el-icon>
+        </template>
+      </el-input>
+    </el-form-item>
+
     <el-form-item prop="password">
       <el-input
         v-model="form.password"
@@ -141,7 +158,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { CircleCheck, CircleClose, Lock } from '@element-plus/icons-vue'
+import { CircleCheck, CircleClose, Lock, User } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
@@ -153,6 +170,7 @@ const authStore = useAuthStore()
 const form = ref<ChangePasswordResponse>({
   password: '',
   confirmPassword: '',
+  username: '',
 })
 
 const formRef = ref<FormInstance | null>(null)
@@ -198,7 +216,9 @@ const passwordsMatch = computed(() => {
   return passwordsMatch
 })
 
-const canSubmit = computed(() => validChecksCount.value === 5 && passwordsMatch.value)
+const canSubmit = computed(
+  () => validChecksCount.value === 5 && passwordsMatch.value && form.value.username,
+)
 
 // Methods
 const updatePasswordChecks = () => {
@@ -212,6 +232,29 @@ const getStrengthColor = () => {
   if (validChecksCount.value <= 2) return '#f56565' // red
   if (validChecksCount.value <= 4) return '#ed8936' // orange
   return '#48bb78' // green
+}
+
+const validateUsername = async (rule: any, value: string, callback: any) => {
+  if (!value) {
+    callback(new Error('Username is required'))
+    return
+  }
+
+  // Check if username exists in localStorage
+  const user = localStorage.getItem('user')
+  if (user) {
+    const userData = JSON.parse(user)
+    if (userData.username === value) {
+      callback() // Username is valid
+      return
+    } else {
+      callback(new Error('Username not found'))
+      return
+    }
+  } else {
+    callback(new Error('No user data found'))
+    return
+  }
 }
 
 // Custom validator that shows all failing requirements
@@ -234,17 +277,20 @@ const validatePassword = (rule: any, value: string, callback: any) => {
 
 const validateConfirmPassword = (rule: any, value: string, callback: any) => {
   if (!value) {
-    console.log('Confirm password is required')
+    callback(new Error('Please confirm your password'))
+    return
   }
 
   if (value !== form.value.password) {
-    console.log('Passwords do not match')
+    callback(new Error('Passwords do not match'))
+    return
   }
 
   callback()
 }
 
 const rules = ref<FormRules>({
+  username: [{ validator: validateUsername, trigger: 'blur' }],
   password: [{ validator: validatePassword, trigger: 'blur' }],
   confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
 })
@@ -260,7 +306,7 @@ const onSubmit = async () => {
 
     await formRef.value.validate()
 
-    const result = await authStore.changePassword(form.value.confirmPassword)
+    const result = await authStore.changePassword(form.value.confirmPassword, form.value.username)
 
     if (result.success) {
       router.push('/')
@@ -275,16 +321,19 @@ const onSubmit = async () => {
 }
 
 onMounted(() => {
-  const admin = localStorage.setItem(
-    'user',
-    JSON.stringify({
-      id: 1,
-      username: 'admin',
-      password: 'admin123',
-      email: 'admin@example.com',
-    }),
-  )
-  return admin
+  // Only set default credentials if no user exists
+  const existingUser = localStorage.getItem('user')
+  if (!existingUser) {
+    localStorage.setItem(
+      'user',
+      JSON.stringify({
+        id: 1,
+        username: 'admin',
+        password: 'admin123',
+        email: 'admin@example.com',
+      }),
+    )
+  }
 })
 </script>
 

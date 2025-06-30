@@ -15,8 +15,12 @@ function getRandomBirthDateAndAge() {
   const birthDay = faker.number.int({ min: 1, max: 28 })
   const birthDate = new Date(birthYear, birthMonth, birthDay)
   return {
-    birthDate: birthDate.toISOString().split('T')[0],
-    age: age.toString(),
+    birthDate: birthDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }),
+    age: (age - 1).toString(),
   }
 }
 
@@ -25,13 +29,13 @@ export function generateFakeStudents(count: number, saveToLocalStorage: boolean 
     const avatar = faker.image.avatar()
     const firstName = faker.person.firstName()
     const lastName = faker.person.lastName()
-    const middleInitial = faker.string.alpha({ length: 1 }).toUpperCase()
+    const middleName = faker.person.middleName()
     const { birthDate, age } = getRandomBirthDateAndAge()
     return {
       _id: i + 1,
       avatar,
       firstName,
-      middleInitial,
+      middleName,
       lastName,
       birthDate,
       age,
