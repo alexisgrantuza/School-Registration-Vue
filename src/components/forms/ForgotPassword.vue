@@ -234,7 +234,7 @@ const getStrengthColor = () => {
   return '#48bb78' // green
 }
 
-const validateUsername = async (rule: any, value: string, callback: any) => {
+const validateUsername = (rule: any, value: string, callback: any) => {
   if (!value) {
     callback(new Error('Username is required'))
     return
@@ -245,7 +245,7 @@ const validateUsername = async (rule: any, value: string, callback: any) => {
   if (user) {
     const userData = JSON.parse(user)
     if (userData.username === value) {
-      callback() // Username is valid
+      callback()
       return
     } else {
       callback(new Error('Username not found'))

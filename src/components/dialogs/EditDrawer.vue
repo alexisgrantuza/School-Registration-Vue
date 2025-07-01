@@ -105,6 +105,7 @@ import {
   preventNumbersInput,
   validateStringOnly,
   validateAge,
+  validateAddress,
 } from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
@@ -181,6 +182,7 @@ const formRules: FormRules<Student> = {
     {
       min: 10,
       max: 200,
+      validator: validateAddress,
       message: 'Address must be between 10 and 200 characters',
       trigger: 'blur',
     },

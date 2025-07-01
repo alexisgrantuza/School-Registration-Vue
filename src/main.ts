@@ -11,7 +11,6 @@ import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { useStudentStore } from './stores/student'
 import { useAuthStore } from './stores/auth'
-import { generateFakeStudents } from './lib/seeder'
 
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

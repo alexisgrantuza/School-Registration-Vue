@@ -12,7 +12,7 @@
       <el-input
         v-model="studentForm.firstName"
         placeholder="Enter first name"
-        @input="filterStringInput('firstName', $event, studentForm)"
+        @input="filterInput('firstName', $event, studentForm)"
         @keydown="preventNumbersInput"
       />
     </el-form-item>
@@ -22,7 +22,7 @@
       <el-input
         v-model="studentForm.middleName"
         placeholder="Enter middle name (optional)"
-        @input="filterStringInput('middleName', $event, studentForm)"
+        @input="filterInput('middleName', $event, studentForm)"
         @keydown="preventNumbersInput"
       />
     </el-form-item>
@@ -32,7 +32,7 @@
       <el-input
         v-model="studentForm.lastName"
         placeholder="Enter last name"
-        @input="filterStringInput('lastName', $event, studentForm)"
+        @input="filterInput('lastName', $event, studentForm)"
         @keydown="preventNumbersInput"
       />
     </el-form-item>
@@ -92,7 +92,7 @@ import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { Student } from '@/types/student'
 import {
-  filterStringInput,
+  filterInput,
   preventNumbersInput,
   validateStringOnly,
   validateAge,
@@ -199,7 +199,7 @@ const disabledDate = (time: Date) => {
 }
 
 const formatDate = (dateInput: string | Date): string => {
-  return studentUtils().formatDate(dateInput)
+  return studentUtils().formatDate(dateInput as string)
 }
 
 const submitForm = async () => {
