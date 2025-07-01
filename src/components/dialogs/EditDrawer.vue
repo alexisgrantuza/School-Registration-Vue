@@ -31,7 +31,7 @@
           v-model="studentForm.middleName"
           placeholder="M.I."
           maxlength="3"
-          @input="filterStringInput('middleName', $event, studentForm)"
+          @input="filterInput('middleName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
       </el-form-item>
@@ -101,7 +101,13 @@ import { ref, reactive, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { Student } from '@/types/student'
-import { filterInput, preventNumbersInput, validateStringOnly } from '@/composables/useValidation'
+import {
+  filterInput,
+  preventNumbersInput,
+  validateStringOnly,
+  validateAddress,
+  validateAge,
+} from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
 import { studentUtils } from '@/composables/useStudentUtils'
@@ -170,16 +176,7 @@ const formRules: FormRules<Student> = {
   age: [
     { required: true, message: 'Age is required', trigger: 'blur' },
     {
-      validator: (rule, value, callback) => {
-        const age = parseInt(value)
-        if (age < 16) {
-          callback(new Error('Student must be at least 16 years old'))
-        } else if (age > 65) {
-          callback(new Error('Student age cannot exceed 65 years'))
-        } else {
-          callback()
-        }
-      },
+      validator: validateAge,
       trigger: 'blur',
     },
   ],
