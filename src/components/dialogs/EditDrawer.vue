@@ -20,7 +20,7 @@
         <el-input
           v-model="studentForm.firstName"
           placeholder="Enter first name"
-          @input="filterStringInput('firstName', $event, studentForm)"
+          @input="filterInput('firstName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
       </el-form-item>
@@ -30,6 +30,7 @@
         <el-input
           v-model="studentForm.middleName"
           placeholder="M.I."
+          maxlength="3"
           @input="filterStringInput('middleName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
@@ -40,7 +41,7 @@
         <el-input
           v-model="studentForm.lastName"
           placeholder="Enter last name"
-          @input="filterStringInput('lastName', $event, studentForm)"
+          @input="filterInput('lastName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
       </el-form-item>
@@ -100,12 +101,7 @@ import { ref, reactive, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { Student } from '@/types/student'
-import {
-  filterStringInput,
-  preventNumbersInput,
-  validateStringOnly,
-  validateAge,
-} from '@/composables/useValidation'
+import { filterInput, preventNumbersInput, validateStringOnly } from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
 import { studentUtils } from '@/composables/useStudentUtils'
@@ -173,13 +169,26 @@ const formRules: FormRules<Student> = {
   birthDate: [{ required: true, message: 'Birth date is required', trigger: 'change' }],
   age: [
     { required: true, message: 'Age is required', trigger: 'blur' },
-    { validator: validateAge, trigger: 'blur' },
+    {
+      validator: (rule, value, callback) => {
+        const age = parseInt(value)
+        if (age < 16) {
+          callback(new Error('Student must be at least 16 years old'))
+        } else if (age > 65) {
+          callback(new Error('Student age cannot exceed 65 years'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur',
+    },
   ],
   address: [
     { required: true, message: 'Address is required', trigger: 'blur' },
     {
       min: 10,
       max: 200,
+      validator: validateAddress,
       message: 'Address must be between 10 and 200 characters',
       trigger: 'blur',
     },
