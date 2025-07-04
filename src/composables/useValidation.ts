@@ -212,6 +212,20 @@ export const validateAddress = (rule: any, value: string, callback: any) => {
     return
   }
 
+  if (!/^[a-zA-Z\s'-]+$/.test(trimmedValue)) {
+    callback(new Error(`Address can only contain letters, spaces, hyphens, and apostrophes`))
+    return
+  }
+
+  const hadExcessiveSpaces = /\s{2,}/.test(value)
+
+  // Provide specific feedback about what was filtered
+  if (hadExcessiveSpaces) {
+    ElMessage.warning('Numbers and excessive spaces have been removed')
+  } else if (hadExcessiveSpaces) {
+    ElMessage.warning('Excessive spaces have been reduced')
+  }
+
   callback()
 }
 

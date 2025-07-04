@@ -300,7 +300,7 @@ const props = defineProps<{
 /* Responsive Breakpoints */
 @media (max-width: 768px) {
   .grid-container {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1rem;
   }
 
@@ -328,6 +328,7 @@ const props = defineProps<{
 @media (max-width: 480px) {
   .grid-container {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .card-header {
@@ -364,6 +365,49 @@ const props = defineProps<{
 
   .info-value {
     font-size: 0.8rem;
+  }
+}
+
+/* Extra small devices (phones, 375px and down) */
+@media (max-width: 375px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .card-header {
+    padding: 0.5rem;
+    gap: 0.75rem;
+  }
+
+  .card-body {
+    padding: 0 0.5rem 0.5rem 0.5rem;
+  }
+
+  .info-grid {
+    gap: 0.5rem;
+  }
+
+  .info-item {
+    padding: 0.4rem;
+    gap: 0.5rem;
+  }
+
+  .avatar {
+    width: 35px !important;
+    height: 35px !important;
+  }
+
+  .student-name {
+    font-size: 0.9rem;
+  }
+
+  .info-label {
+    font-size: 0.65rem;
+  }
+
+  .info-value {
+    font-size: 0.75rem;
   }
 }
 </style>

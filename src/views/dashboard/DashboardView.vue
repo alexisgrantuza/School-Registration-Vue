@@ -2,11 +2,11 @@
   <NavHeader :searchQuery="searchQuery" @searchQuery="handleSearchQuery" />
   <div class="dashboard">
     <div class="dashboard-content">
-      <h1>Student Management Dashboard</h1>
       <div class="dashboard-actions">
         <el-button type="primary" :icon="Plus" size="large" @click="openStudentDrawer">
           Register New Student
         </el-button>
+        <el-button type="primary" :icon="Plus" size="large" @click="addStudent">5 </el-button>
       </div>
 
       <!-- Student Registration Drawer -->
@@ -45,10 +45,38 @@ import { Plus } from '@element-plus/icons-vue'
 import StudentListCard from '@/components/layout/StudentListCard.vue'
 import { generateFakeStudents } from '@/lib/seeder'
 import type { Student } from '@/types/student'
+import { useStudentStore } from '@/stores/student'
 
-onMounted(() => {
-  generateFakeStudents(10)
-})
+const studentStore = useStudentStore()
+
+const addStudent = async () => {
+  await studentStore.fetchStudents()
+  const existingStudents = studentStore.getStudents
+
+  const uniqueFakeStudents = []
+  let attempts = 0
+  while (uniqueFakeStudents.length < 5 && attempts < 50) {
+    // limit attempts to avoid infinite loop
+    const [fakeStudent] = generateFakeStudents(5, false)
+    const isDuplicate = existingStudents
+      .concat(uniqueFakeStudents)
+      .some(
+        (s) =>
+          s.firstName.trim().toLowerCase() === fakeStudent.firstName.trim().toLowerCase() &&
+          (s.middleName?.trim().toLowerCase() ?? '') ===
+            (fakeStudent.middleName?.trim().toLowerCase() ?? '') &&
+          s.lastName.trim().toLowerCase() === fakeStudent.lastName.trim().toLowerCase(),
+      )
+    if (!isDuplicate) {
+      uniqueFakeStudents.push(fakeStudent)
+    }
+    attempts++
+  }
+
+  for (const student of uniqueFakeStudents) {
+    await studentStore.createStudent(student)
+  }
+}
 
 const drawerVisible = ref(false)
 const searchQuery = ref('')
@@ -121,7 +149,6 @@ const openViewModal = (student: Student) => {
 }
 
 .dashboard-actions {
-  margin-top: -5rem;
   display: flex;
   justify-content: end;
   margin-bottom: 2rem;

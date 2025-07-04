@@ -8,14 +8,7 @@
 
       <!-- Desktop Actions -->
       <div class="desktop-actions">
-        <el-input
-          v-model="searchQuery"
-          placeholder="Search..."
-          class="search-input"
-          :prefix-icon="Search"
-          clearable
-          @input="$emit('searchQuery', $event)"
-        />
+        <el-input placeholder="Search..." class="search-input" :prefix-icon="Search" clearable />
 
         <el-button circle @click="toggleTheme" class="theme-btn">
           <el-icon><Sunny v-if="isDark" /><Moon v-else /></el-icon>
@@ -58,7 +51,6 @@
         <el-dropdown @command="handleCommand">
           <el-avatar :size="32" class="mobile-avatar">
             <el-icon><User /></el-icon>
-            <span class="username">{{ username }}</span>
           </el-avatar>
           <template #dropdown>
             <el-dropdown-menu>
@@ -80,7 +72,6 @@
     <!-- Mobile Search Bar -->
     <div v-if="showMobileSearch" class="mobile-search">
       <el-input
-        v-model="searchQuery"
         placeholder="Search..."
         :prefix-icon="Search"
         clearable
@@ -108,13 +99,10 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const isDark = ref(false)
 const showMobileSearch = ref(false)
-const searchQuery = ref('')
 const authStore = useAuthStore()
 
 // Make username reactive to auth store changes
 const username = computed(() => authStore.getUser.username || 'User')
-
-defineEmits(['searchQuery'])
 
 const handleCommand = (command: string) => {
   switch (command) {
@@ -126,7 +114,6 @@ const handleCommand = (command: string) => {
       break
     case 'logout':
       // Handle logout
-      ElMessage.success('Logged out successfully')
       router.push('/')
       break
   }
@@ -162,7 +149,6 @@ const handleLogout = () => {
   align-items: center;
   justify-content: space-between;
   height: 60px;
-  padding: 0 24px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -329,25 +315,71 @@ const handleLogout = () => {
   .brand-name {
     font-size: 18px;
   }
+
+  .students-container {
+    padding: 0.5rem;
+  }
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .filter-bar {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  .search-input,
+  .course-filter {
+    width: 100%;
+    min-width: unset;
+  }
 }
 
 @media (max-width: 480px) {
   .header-container {
-    padding: 0 16px;
+    padding: 0 8px;
   }
-
+  .brand-name {
+    font-size: 1rem;
+  }
   .mobile-actions {
-    gap: 12px;
+    gap: 8px;
   }
-
-  .mobile-btn {
-    width: 36px;
-    height: 36px;
-  }
-
+  .mobile-btn,
   .mobile-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .students-title {
+    font-size: 1.1rem;
+  }
+  .students-header {
+    margin-bottom: 1rem;
+  }
+  .grid-container {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .card-header {
+    flex-direction: row;
+    align-items: center;
+    padding: 0.75rem;
+  }
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .avatar {
     width: 36px !important;
     height: 36px !important;
+    font-size: 0.95rem !important;
+  }
+  .student-name {
+    font-size: 0.9rem;
+  }
+  .info-item {
+    padding: 0.4rem;
   }
 }
 </style>

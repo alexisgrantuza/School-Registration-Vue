@@ -18,6 +18,8 @@ export const useAuthStore = defineStore('auth', {
     setToken(token: string) {
       this.token = token
       this.isAuthenticated = !!token
+      // Store authentication state separately
+      localStorage.setItem('isAuthenticated', this.isAuthenticated.toString())
     },
     setUser(user: User) {
       this.user = user
@@ -35,13 +37,6 @@ export const useAuthStore = defineStore('auth', {
         console.log('Default admin credentials initialized')
       }
     },
-    /* login(token: string, user: User) {
-      this.setToken(token)
-      this.setUser(user)
-
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(user))
-    }, */
     async login(username: string, password: string) {
       try {
         const response = await this.authenticateUser(username, password)
@@ -126,6 +121,7 @@ export const useAuthStore = defineStore('auth', {
 
       localStorage.removeItem('token')
       localStorage.removeItem('user')
+      localStorage.removeItem('isAuthenticated')
       localStorage.removeItem('admin')
     },
     async getAuth() {
@@ -133,11 +129,18 @@ export const useAuthStore = defineStore('auth', {
 
       const token = localStorage.getItem('token')
       const user = localStorage.getItem('user')
+      const isAuthenticated = localStorage.getItem('isAuthenticated')
 
-      if (token && user) {
+      // Only set authentication if both token and user exist AND isAuthenticated is true
+      if (token && user && isAuthenticated === 'true') {
         this.setToken(token)
         this.setUser(JSON.parse(user))
         this.isAuthenticated = true
+      } else {
+        // Clear authentication if any required data is missing
+        this.token = ''
+        this.user = {} as User
+        this.isAuthenticated = false
       }
     },
   },

@@ -29,17 +29,16 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  // Initialize default credentials when visiting home page (login form)
-  if (to.path === '/') {
-    authStore.DefaultCredentials()
-  }
+  await authStore.getAuth()
 
   console.log(authStore.isLoggedIn)
   if (to.path === '/' && authStore.isLoggedIn) {
     next('/dashboard')
+  } else if (to.meta.requiresAuth && !authStore.isLoggedIn) {
+    next('/')
   } else {
     next()
   }

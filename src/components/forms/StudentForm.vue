@@ -60,12 +60,13 @@
         type="textarea"
         :rows="3"
         placeholder="Enter complete address"
+        @input="filterInput('address', $event, studentForm)"
       />
     </el-form-item>
 
     <!-- Course -->
     <el-form-item label="Course" prop="course">
-      <el-select v-model="studentForm.course" placeholder="Select a course" style="width: 100%">
+      <el-select v-model="studentForm.course" placeholder="Select a course" fit-input-width="true">
         <el-option
           v-for="course in courses"
           :key="course.value"
@@ -96,6 +97,7 @@ import {
   preventNumbersInput,
   validateStringOnly,
   validateAge,
+  validateAddress,
 } from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
@@ -151,7 +153,7 @@ const formRules: FormRules<Student> = {
     },
   ],
   address: [
-    { required: true, message: 'Address is required', trigger: 'blur' },
+    { validator: validateAddress, trigger: 'blur' },
     {
       min: 10,
       max: 200,
@@ -208,6 +210,20 @@ const submitForm = async () => {
   try {
     await studentFormRef.value.validate()
     submitting.value = true
+
+    const duplicate = studentStore.getStudents.some(
+      (s) =>
+        s.firstName.trim().toLowerCase() === studentForm.firstName.trim().toLowerCase() &&
+        (s.middleName?.trim().toLowerCase() ?? '') ===
+          (studentForm.middleName?.trim().toLowerCase() ?? '') &&
+        s.lastName.trim().toLowerCase() === studentForm.lastName.trim().toLowerCase(),
+    )
+
+    if (duplicate) {
+      ElMessage.error('The student data already exists!')
+      submitting.value = false
+      return
+    }
 
     await new Promise((resolve) => setTimeout(resolve, 1000))
 

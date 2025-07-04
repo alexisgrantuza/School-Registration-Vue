@@ -9,20 +9,45 @@ export const usePagination = (searchQuery: Ref<string>, courseFilter: Ref<string
   const currentPage = ref(1)
   const pageSize = ref(8)
 
+  // function to set it in default value
+  const normalizeText = (text: string): string => {
+    return text.toLowerCase().trim().replace(/\s+/g, ' ')
+  }
+
   // First filter, then paginate
   const filteredStudents = computed(() => {
     let filtered = students.value
 
     // Apply search filter
     if (searchQuery.value) {
-      const query = searchQuery.value.toLowerCase()
-      filtered = filtered.filter(
-        (student) =>
-          student.firstName.toLowerCase().includes(query) ||
-          student.lastName.toLowerCase().includes(query) ||
-          student.course.toLowerCase().includes(query) ||
-          getFullName(student).toLowerCase().includes(query),
-      )
+      const query = normalizeText(searchQuery.value)
+      filtered = filtered.filter((student) => {
+        const firstName = normalizeText(student.firstName)
+        const lastName = normalizeText(student.lastName)
+        const fullName = normalizeText(getFullName(student))
+
+        const fullNameReversed = normalizeText(`${student.lastName} ${student.firstName}`)
+        const fullNameWithMiddle = student.middleName
+          ? normalizeText(`${student.firstName} ${student.middleName} ${student.lastName}`)
+          : ''
+
+        return (
+          firstName.includes(query) ||
+          lastName.includes(query) ||
+          fullName.includes(query) ||
+          fullNameReversed.includes(query) ||
+          (fullNameWithMiddle && fullNameWithMiddle.includes(query)) ||
+          // Also check if the query matches when split by spaces
+          query
+            .split(' ')
+            .every(
+              (word) =>
+                firstName.includes(word) ||
+                lastName.includes(word) ||
+                (student.middleName && normalizeText(student.middleName).includes(word)),
+            )
+        )
+      })
     }
 
     // Apply course filter

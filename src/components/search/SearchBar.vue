@@ -1,7 +1,7 @@
 <template>
   <el-input
     v-model="inputValue"
-    placeholder="Search students by name or course..."
+    placeholder="Search students by name..."
     :prefix-icon="Search"
     size="large"
     clearable

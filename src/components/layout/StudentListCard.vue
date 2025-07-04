@@ -316,6 +316,10 @@ onMounted(async () => {
     gap: 1rem;
   }
 
+  .header-content .students-count {
+    display: flex;
+  }
+
   .students-title {
     font-size: 1.5rem;
   }

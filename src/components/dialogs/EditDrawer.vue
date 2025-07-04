@@ -73,7 +73,12 @@
 
       <!-- Course -->
       <el-form-item label="Course" prop="course">
-        <el-select v-model="studentForm.course" placeholder="Select a course" style="width: 100%">
+        <el-select
+          v-model="studentForm.course"
+          placeholder="Select a course"
+          style="width: 100%"
+          fit-input-width="true"
+        >
           <el-option
             v-for="course in courses"
             :key="course.value"
