@@ -16,9 +16,11 @@
         :size="500"
         direction="rtl"
         :before-close="handleDrawerClose"
+        default
       >
         <div class="registration-form">
           <StudentForm
+            ref="studentFormRef"
             :courses="courses"
             @student-registered="handleStudentRegistered"
             @cancel-registration="handleCancelRegistration"
@@ -48,6 +50,7 @@ import type { Student } from '@/types/student'
 import { useStudentStore } from '@/stores/student'
 
 const studentStore = useStudentStore()
+const studentFormRef = ref()
 
 const addStudent = async () => {
   await studentStore.fetchStudents()
@@ -105,6 +108,7 @@ const handleDrawerClose = (done: () => void) => {
     },
   )
     .then(() => {
+      studentFormRef.value?.resetForm()
       done()
     })
     .catch(() => {})

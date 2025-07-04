@@ -241,10 +241,10 @@ const submitForm = async () => {
 }
 
 const resetForm = () => {
-  if (studentFormRef.value) {
-    studentFormRef.value.resetFields()
-  }
+  studentFormRef.value?.resetFields()
 }
+
+defineExpose({ resetForm })
 
 const cancelRegistration = () => {
   emit('cancel-registration')
