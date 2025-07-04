@@ -212,11 +212,11 @@ const submitForm = async () => {
     submitting.value = true
 
     const duplicate = studentStore.getStudents.some(
-      (s) =>
-        s.firstName.trim().toLowerCase() === studentForm.firstName.trim().toLowerCase() &&
-        (s.middleName?.trim().toLowerCase() ?? '') ===
+      (student) =>
+        student.firstName.trim().toLowerCase() === studentForm.firstName.trim().toLowerCase() &&
+        (student.middleName?.trim().toLowerCase() ?? '') ===
           (studentForm.middleName?.trim().toLowerCase() ?? '') &&
-        s.lastName.trim().toLowerCase() === studentForm.lastName.trim().toLowerCase(),
+        student.lastName.trim().toLowerCase() === studentForm.lastName.trim().toLowerCase(),
     )
 
     if (duplicate) {

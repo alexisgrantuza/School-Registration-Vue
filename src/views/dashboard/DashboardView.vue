@@ -6,7 +6,16 @@
         <el-button type="primary" :icon="Plus" size="large" @click="openStudentDrawer">
           Register New Student
         </el-button>
-        <el-button type="primary" :icon="Plus" size="large" @click="addStudent">5 </el-button>
+        <el-button
+          type="primary"
+          :icon="Plus"
+          size="large"
+          @click="addStudent"
+          :autoFocus="false"
+          :loading="isAdding"
+          :disabled="isAdding"
+          >5
+        </el-button>
       </div>
 
       <!-- Student Registration Drawer -->
@@ -52,32 +61,39 @@ import { useStudentStore } from '@/stores/student'
 const studentStore = useStudentStore()
 const studentFormRef = ref()
 
+const isAdding = ref(false)
+
 const addStudent = async () => {
-  await studentStore.fetchStudents()
-  const existingStudents = studentStore.getStudents
+  if (isAdding.value) return
+  isAdding.value = true
+  try {
+    await studentStore.fetchStudents()
+    const existingStudents = studentStore.getStudents
 
-  const uniqueFakeStudents = []
-  let attempts = 0
-  while (uniqueFakeStudents.length < 5 && attempts < 50) {
-    // limit attempts to avoid infinite loop
-    const [fakeStudent] = generateFakeStudents(5, false)
-    const isDuplicate = existingStudents
-      .concat(uniqueFakeStudents)
-      .some(
-        (s) =>
-          s.firstName.trim().toLowerCase() === fakeStudent.firstName.trim().toLowerCase() &&
-          (s.middleName?.trim().toLowerCase() ?? '') ===
-            (fakeStudent.middleName?.trim().toLowerCase() ?? '') &&
-          s.lastName.trim().toLowerCase() === fakeStudent.lastName.trim().toLowerCase(),
-      )
-    if (!isDuplicate) {
-      uniqueFakeStudents.push(fakeStudent)
+    const uniqueFakeStudents = []
+    let attempts = 0
+    while (uniqueFakeStudents.length < 5 && attempts < 50) {
+      const [fakeStudent] = generateFakeStudents(5, false)
+      const isDuplicate = existingStudents
+        .concat(uniqueFakeStudents)
+        .some(
+          (s) =>
+            s.firstName.trim().toLowerCase() === fakeStudent.firstName.trim().toLowerCase() &&
+            (s.middleName?.trim().toLowerCase() ?? '') ===
+              (fakeStudent.middleName?.trim().toLowerCase() ?? '') &&
+            s.lastName.trim().toLowerCase() === fakeStudent.lastName.trim().toLowerCase(),
+        )
+      if (!isDuplicate) {
+        uniqueFakeStudents.push(fakeStudent)
+      }
+      attempts++
     }
-    attempts++
-  }
 
-  for (const student of uniqueFakeStudents) {
-    await studentStore.createStudent(student)
+    for (const student of uniqueFakeStudents) {
+      await studentStore.createStudent(student)
+    }
+  } finally {
+    isAdding.value = false
   }
 }
 

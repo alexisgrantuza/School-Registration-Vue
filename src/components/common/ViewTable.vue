@@ -16,7 +16,12 @@
             <el-button type="text" @click="editStudent(scope.row)">
               <el-icon><Edit /></el-icon>
             </el-button>
-            <el-button type="text" @click="deleteStudent(scope.row)">
+            <el-button
+              type="text"
+              @click="() => handleDelete(scope.row)"
+              :autoFocus="false"
+              :disabled="isDeleting"
+            >
               <el-icon><Delete /></el-icon>
             </el-button>
           </template>
@@ -36,20 +41,33 @@ import { useActions } from '@/composables/useActions'
 import { View, Edit, Delete } from '@element-plus/icons-vue'
 import type { Student } from '@/types/student'
 import EditDrawer from '@/components/dialogs/EditDrawer.vue'
+import { ref, onMounted } from 'vue'
 
 const {
   viewStudent,
   editStudent,
+  handleStudentUpdated,
   deleteStudent,
   showEditModal,
   selectedStudent,
-  handleStudentUpdated,
 } = useActions()
 
 const props = defineProps<{
   paginatedStudents: Student[]
   pageSize: number
 }>()
+
+const isDeleting = ref(false)
+
+const handleDelete = async (student: Student) => {
+  if (isDeleting.value) return
+  isDeleting.value = true
+  try {
+    await deleteStudent(student)
+  } finally {
+    isDeleting.value = false
+  }
+}
 
 console.log('paginatedStudents', props.paginatedStudents)
 </script>
