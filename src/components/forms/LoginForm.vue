@@ -103,6 +103,14 @@ const form = reactive({
 const onSubmit = async () => {
   console.log('submit!')
 
+  if(form.password.length < 6) {
+    ElMessage.error('Password must be at least 6 characters long')
+    return 
+  } else if(form.password.length > 20) {
+    ElMessage.error('Password must be at most 20 characters long')
+    return
+  }
+
   if (!form.username || !form.password) {
     ElMessage.error('Username and password are required')
     return
@@ -152,6 +160,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+* {
+  background-color: transparent !important;
+}
+
 .transparent-input :deep(.el-input__wrapper) {
   background-color: transparent !important;
   box-shadow: none !important;

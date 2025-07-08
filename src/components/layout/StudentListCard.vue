@@ -183,7 +183,7 @@ const handlePageChange = (page: number) => {
   nextTick(() => {
     const gridElement = document.querySelector('.students-grid')
     if (gridElement) {
-      gridElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      gridElement.scrollIntoView({ behavior: 'smooth', block: 'end' })
     }
   })
 }
@@ -211,6 +211,7 @@ onMounted(async () => {
   padding: 2rem;
   background: #f8f9fa;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 .students-header {

@@ -16,7 +16,7 @@ export const usePagination = (searchQuery: Ref<string>, courseFilter: Ref<string
 
   // First filter, then paginate
   const filteredStudents = computed(() => {
-    let filtered = students.value
+    let filtered = [...students.value]
 
     // Apply search filter
     if (searchQuery.value) {
@@ -47,6 +47,13 @@ export const usePagination = (searchQuery: Ref<string>, courseFilter: Ref<string
                 (student.middleName && normalizeText(student.middleName).includes(word)),
             )
         )
+      })
+
+      // Sort by full name (last name first, then first name, then middle name)
+      filtered.sort((a, b) => {
+        const nameA = `${a.lastName} ${a.firstName} ${a.middleName || ''}`.toLowerCase()
+        const nameB = `${b.lastName} ${b.firstName} ${b.middleName || ''}`.toLowerCase()
+        return nameA.localeCompare(nameB)
       })
     }
 

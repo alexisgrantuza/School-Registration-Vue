@@ -30,7 +30,6 @@
         <el-input
           v-model="studentForm.middleName"
           placeholder="M.I."
-          maxlength="3"
           @input="filterInput('middleName', $event, studentForm)"
           @keydown="preventNumbersInput"
         />
@@ -69,6 +68,7 @@
           type="textarea"
           :rows="3"
           placeholder="Enter complete address"
+          @input="excessiveSpaceRegex($event, studentForm)"
         />
       </el-form-item>
 
@@ -112,6 +112,7 @@ import {
   validateStringOnly,
   validateAddress,
   validateAge,
+  excessiveSpaceRegex,
 } from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'

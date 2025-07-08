@@ -2,12 +2,12 @@
   <div class="table-responsive">
     <transition-group name="list" tag="div" class="list-container" appear>
       <el-table :data="props.paginatedStudents">
-        <el-table-column prop="firstName" label="First Name" />
-        <el-table-column prop="lastName" label="Last Name" />
-        <el-table-column prop="course" label="Course" />
-        <el-table-column prop="address" label="Address" class-name="hide-mobile" />
-        <el-table-column prop="birthDate" label="Birth Date" />
-        <el-table-column prop="age" label="Age" />
+        <el-table-column prop="firstName" label="First Name" min-width="100"/>
+        <el-table-column prop="lastName" label="Last Name" min-width="100"/>
+        <el-table-column prop="course" label="Course" min-width="100"/>
+        <el-table-column prop="address" label="Address" class-name="hide-mobile" min-width="200"/>
+        <el-table-column prop="birthDate" label="Birth Date" min-width="100"/>
+        <el-table-column prop="age" label="Age" min-width="100"/>
         <el-table-column prop="actions" label="Actions" width="100" class-name="hide-mobile">
           <template #default="scope">
             <el-button type="text" @click="viewStudent(scope.row)">

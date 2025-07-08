@@ -8,7 +8,6 @@
 
       <!-- Desktop Actions -->
       <div class="desktop-actions">
-        <el-input placeholder="Search..." class="search-input" :prefix-icon="Search" clearable />
 
         <el-button circle @click="toggleTheme" class="theme-btn">
           <el-icon><Sunny v-if="isDark" /><Moon v-else /></el-icon>

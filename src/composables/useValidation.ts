@@ -30,7 +30,7 @@ export const validateStringOnly = (rule: any, value: string, callback: any) => {
   }
 
   // Check for special characters (allow hyphens and apostrophes for names like O'Connor or Mary-Jane)
-  const allowedSpecialChars = /^[a-zA-Z\s'-]+$/
+  const allowedSpecialChars = /^[\p{L}\s'-]+$/u
   if (!allowedSpecialChars.test(trimmedValue)) {
     callback(new Error(`${fieldName} can only contain letters, spaces, hyphens, and apostrophes`))
     return
@@ -100,6 +100,16 @@ export const filterInput = (fieldName: keyof Student, value: string, studentForm
   } else if (hadExcessiveSpaces) {
     ElMessage.warning('Excessive spaces have been reduced')
   }
+}
+
+export const excessiveSpaceRegex = (value: string, studentForm: Student) => {
+  let filteredValue = value.replace(/\s{2,}/g, ' ') // Replace multiple spaces with single space
+
+  const hadExcessiveSpaces = /\s{2,}/.test(value)
+  if (hadExcessiveSpaces) {
+    ElMessage.warning('Excessive spaces have been reduced')
+  }
+  studentForm.address = filteredValue as never
 }
 
 // Enhanced age validation with better error messages
@@ -212,8 +222,12 @@ export const validateAddress = (rule: any, value: string, callback: any) => {
     return
   }
 
-  if (!/^[a-zA-Z\s'-]+$/.test(trimmedValue)) {
-    callback(new Error(`Address can only contain letters, spaces, hyphens, and apostrophes`))
+  if (!/^[\p{L}\d\s.,'\\/#-]+$/u.test(trimmedValue)) {
+    callback(
+      new Error(
+        `Address can only contain letters, numbers, spaces, and common punctuation (.,'\\/#-)`,
+      ),
+    )
     return
   }
 

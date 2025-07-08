@@ -60,7 +60,7 @@
         type="textarea"
         :rows="3"
         placeholder="Enter complete address"
-        @input="filterInput('address', $event, studentForm)"
+        @input="excessiveSpaceRegex($event, studentForm)"
       />
     </el-form-item>
 
@@ -98,6 +98,7 @@ import {
   validateStringOnly,
   validateAge,
   validateAddress,
+  excessiveSpaceRegex,
 } from '@/composables/useValidation'
 import { useStudentStore } from '@/stores/student'
 import { COURSES } from '@/constants/courses'
@@ -216,6 +217,7 @@ const submitForm = async () => {
         student.firstName.trim().toLowerCase() === studentForm.firstName.trim().toLowerCase() &&
         (student.middleName?.trim().toLowerCase() ?? '') ===
           (studentForm.middleName?.trim().toLowerCase() ?? '') &&
+        student.birthDate.toString() === studentForm.birthDate.toString() &&
         student.lastName.trim().toLowerCase() === studentForm.lastName.trim().toLowerCase(),
     )
 
