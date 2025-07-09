@@ -51,7 +51,7 @@
           width: 100%;
           height: 45px;
           border-radius: 4px;
-          color: #244bc5;
+          color: #fff;
           font-size: 16px;
           font-weight: 600;
           font-family: 'Montserrat';
@@ -59,6 +59,7 @@
           text-transform: uppercase;
           background-color: #fff;
           margin-top: 25px;
+          z-index: 10;
         "
       >
         Login
@@ -103,10 +104,10 @@ const form = reactive({
 const onSubmit = async () => {
   console.log('submit!')
 
-  if(form.password.length < 6) {
+  if (form.password.length < 6) {
     ElMessage.error('Password must be at least 6 characters long')
-    return 
-  } else if(form.password.length > 20) {
+    return
+  } else if (form.password.length > 20) {
     ElMessage.error('Password must be at most 20 characters long')
     return
   }

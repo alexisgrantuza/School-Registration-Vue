@@ -192,7 +192,7 @@ const formRules: FormRules<Student> = {
       min: 10,
       max: 200,
       validator: validateAddress,
-      message: 'Address must be between 10 and 200 characters',
+      message: 'Invalid characters',
       trigger: 'blur',
     },
   ],

@@ -48,18 +48,17 @@ export const usePagination = (searchQuery: Ref<string>, courseFilter: Ref<string
             )
         )
       })
-
-      // Sort by full name (last name first, then first name, then middle name)
-      filtered.sort((a, b) => {
-        const nameA = `${a.lastName} ${a.firstName} ${a.middleName || ''}`.toLowerCase()
-        const nameB = `${b.lastName} ${b.firstName} ${b.middleName || ''}`.toLowerCase()
-        return nameA.localeCompare(nameB)
-      })
     }
 
     // Apply course filter
     if (courseFilter.value) {
       filtered = filtered.filter((student) => student.course === courseFilter.value)
+      // Sort only if course filter is active
+      filtered.sort((a, b) => {
+        const nameA = `${a.lastName} ${a.firstName} ${a.middleName || ''}`.toLowerCase()
+        const nameB = `${b.lastName} ${b.firstName} ${b.middleName || ''}`.toLowerCase()
+        return nameA.localeCompare(nameB)
+      })
     }
 
     return filtered
